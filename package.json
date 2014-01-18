@@ -1,0 +1,27 @@
+{
+  "name": "gulp-surgeon",
+  "version": "0.1.0",
+  "description": "Surgical percision for Gulp",
+  "main": "index.js",
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "test": "mocha"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/rschmukler/gulp-surgeon"
+  },
+  "keywords": [
+    "gulp",
+    "surgeon",
+    "induvidual",
+    "files"
+  ],
+  "author": "Ryan Schmukler <ryan@slingingcode.com> (http://slingingcode.com/)",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/rschmukler/gulp-surgeon/issues"
+  }
+}
