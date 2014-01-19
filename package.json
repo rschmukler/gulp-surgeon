@@ -23,5 +23,12 @@
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/rschmukler/gulp-surgeon/issues"
+  },
+  "devDependencies": {
+    "expect.js": "~0.2.0"
+  },
+  "dependencies": {
+    "gulp-util": "~2.2.12",
+    "through": "~2.3.4"
   }
 }
