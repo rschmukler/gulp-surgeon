@@ -31,6 +31,7 @@ exports.stitch = function(fileName, opts) {
 
   function write(file) {
     firstFile = firstFile || file;
+    signFile(file, comment, newLine);
     buffer.push(file.contents.toString());
   }
 
@@ -52,3 +53,10 @@ exports.stitch = function(fileName, opts) {
 
   return through(write, end);
 };
+
+function signFile(file, comment, newLine) {
+  var contents = file.contents.toString();
+  var numLines = contents.split(newLine).length;
+  contents = comment.start + 'surgeon-file: ' + file.path + ': ' +  numLines + ' ' + comment.end + newLine + contents;
+  file.contents = new Buffer(contents);
+}
