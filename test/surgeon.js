@@ -21,6 +21,7 @@ describe('stitch', function() {
     stream.write(fakeFile);
     stream.end();
   });
+
   it('concats all of the files into one file', function(done) {
     var stream = surgeon.stitch('app.js');
 
@@ -49,46 +50,50 @@ describe('stitch', function() {
     stream.end();
   });
 
-  it('has options for the newLine', function(done) {
-    var stream = surgeon.stitch('app.js', {newLine: '\n\r'});
+  describe('options', function() {
+    it('has options for the newLine', function(done) {
+      var stream = surgeon.stitch('app.js', {newLine: '\n\r'});
 
-    var fakeFile = new File({
-      cwd: __dirname,
-      base: __dirname + 'test',
-      path: __dirname + 'test/file.js',
-      contents: new Buffer('Hello')
+      var fakeFile = new File({
+        cwd: __dirname,
+        base: __dirname + 'test',
+        path: __dirname + 'test/file.js',
+        contents: new Buffer('Hello')
+      });
+
+      stream.on('data', function(file) {
+        expect(file.contents.toString()).to.match(/\n\r/);
+        done();
+      });
+
+      stream.write(fakeFile);
+      stream.end();
     });
 
-    stream.on('data', function(file) {
-      expect(file.contents.toString()).to.match(/\n\r/);
-      done();
-    });
+    it('has options for the comment signature', function(done) {
+      var stream = surgeon.stitch('app.js', {comment: {start: 'OMGBIGCOMMENTSTART', end: 'OMGBIGCOMMENTEND'}});
 
-    stream.write(fakeFile);
-    stream.end();
+      var fakeFile = new File({
+        cwd: __dirname,
+        base: __dirname + 'test',
+        path: __dirname + 'test/file.js',
+        contents: new Buffer('Hello')
+      });
+
+      stream.on('data', function(file) {
+        expect(file.contents.toString()).to.match(/OMGBIGCOMMENTSTART/);
+        expect(file.contents.toString()).to.match(/OMGBIGCOMMENTEND/);
+        done();
+      });
+
+      stream.write(fakeFile);
+      stream.end();
+    });
   });
 
-  it('has options for the comment signature', function(done) {
-    var stream = surgeon.stitch('app.js', {comment: {start: 'OMGBIGCOMMENTSTART', end: 'OMGBIGCOMMENTEND'}});
-
-    var fakeFile = new File({
-      cwd: __dirname,
-      base: __dirname + 'test',
-      path: __dirname + 'test/file.js',
-      contents: new Buffer('Hello')
-    });
-
-    stream.on('data', function(file) {
-      expect(file.contents.toString()).to.match(/OMGBIGCOMMENTSTART/);
-      expect(file.contents.toString()).to.match(/OMGBIGCOMMENTEND/);
-      done();
-    });
-
-    stream.write(fakeFile);
-    stream.end();
-  });
 });
 
 describe('slice', function() {
   it('swaps out just the file from the destination');
+  it('appends new files to the destination');
 });
