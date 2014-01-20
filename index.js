@@ -55,14 +55,14 @@ exports.stitch = function(fileName, opts) {
   return through(write, end);
 };
 
-exports.slice = function(path, opts) {
+exports.slice = function(filePath, opts) {
   opts = opts || {};
-  if (!path) throw new PluginError('gulp-surgeon', 'Missing file path for destination');
+  if (!filePath) throw new PluginError('gulp-surgeon', 'Missing file path for destination');
 
   var newLine = opts.newLine || gutil.linefeed,
       comment;
 
-  var ext = path.split('.').pop();
+  var ext = filePath.split('.').pop();
 
   if(!opts.comment) {
     if(!(comment = COMMENT_MAP[ext])) {
@@ -74,8 +74,10 @@ exports.slice = function(path, opts) {
 
   // Read contents of path
   var destFile = new File({
-    path: path,
-    contents: readFileSync(path)
+    cwd: path.dirname(filePath),
+    base: path.dirname(filePath),
+    path: filePath,
+    contents: readFileSync(filePath)
   });
 
   function write(file) {

@@ -9,8 +9,8 @@ describe('stitch', function() {
 
     var fakeFile = new File({
       cwd: __dirname,
-      base: __dirname + 'test',
-      path: __dirname + 'test/file.js',
+      base: __dirname + '/test',
+      path: __dirname + '/test/file.js',
       contents: new Buffer('Hello')
     });
 
