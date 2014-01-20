@@ -1,5 +1,6 @@
 var gutil = require('gulp-util'),
     path = require('path'),
+    readFileSync = require('fs').readFileSync,
     through = require('through');
 
 var PluginError = gutil.PluginError,
@@ -54,9 +55,61 @@ exports.stitch = function(fileName, opts) {
   return through(write, end);
 };
 
+exports.slice = function(path, opts) {
+  opts = opts || {};
+  if (!path) throw new PluginError('gulp-surgeon', 'Missing file path for destination');
+
+  var newLine = opts.newLine || gutil.linefeed,
+      comment;
+
+  var ext = path.split('.').pop();
+
+  if(!opts.comment) {
+    if(!(comment = COMMENT_MAP[ext])) {
+      throw new PluginError('gulp-surgeon', 'Could not determine comment signature for extensions ' + ext);
+    }
+  } else {
+    comment = opts.comment;
+  }
+
+  // Read contents of path
+  var destFile = new File({
+    path: path,
+    contents: readFileSync(path)
+  });
+
+  function write(file) {
+    var regex = new RegExp('surgeon-file: ' + file.path);
+
+    var buffer = destFile.contents.toString().split(newLine),
+        found = false;
+
+    signFile(file, comment, newLine);
+
+    for(var i = 0; i < buffer.length; ++i) {
+      if(regex.test(buffer[i])) {
+        var numLines = parseInt(buffer[i].match(/\s\d+\s/), 10);
+        var newContent = file.contents.toString().split(newLine);
+        newContent.unshift(numLines);
+        newContent.unshift(i);
+        buffer.splice.apply(buffer, newContent);
+        i += numLines;
+        destFile.contents = new Buffer(buffer.join(newLine));
+        found = true;
+      }
+    }
+    if(!found) {
+      destFile.contents = new Buffer(destFile.contents.toString() + newLine + file.contents.toString());
+    }
+    this.emit('data', destFile);
+  }
+
+  return through(write);
+};
+
 function signFile(file, comment, newLine) {
   var contents = file.contents.toString();
-  var numLines = contents.split(newLine).length;
+  var numLines = contents.split(newLine).length + 1; // We are adding a line
   contents = comment.start + 'surgeon-file: ' + file.path + ': ' +  numLines + ' ' + comment.end + newLine + contents;
   file.contents = new Buffer(contents);
 }

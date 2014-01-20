@@ -1,5 +1,6 @@
 var surgeon = require('../'),
     expect = require('expect.js'),
+    write = require('fs').writeFile,
     File = require('gulp-util').File;
 
 describe('stitch', function() {
@@ -94,6 +95,48 @@ describe('stitch', function() {
 });
 
 describe('slice', function() {
-  it('swaps out just the file from the destination');
-  it('appends new files to the destination');
+  before(function prepareFixture(done) {
+    var testFileName = __dirname + '/test/file.css';
+    write(__dirname + '/fixtures/app.css', '/* surgeon-file: '+ testFileName + ' 2 */\nHello', done);
+  });
+
+  it('swaps out just the file from the destination', function(done) {
+    var stream = surgeon.slice(__dirname + '/fixtures/app.css');
+    var fakeFile = new File({
+      cwd: __dirname,
+      base: __dirname + '/test',
+      path: __dirname + '/test/file.css',
+      contents: new Buffer('Goodbye')
+    });
+
+    stream.on('data', function(file) {
+      expect(file.path).to.be(__dirname + '/fixtures/app.css');
+      expect(file.contents.toString()).to.match(/Goodbye/);
+      expect(file.contents.toString()).to.not.match(/Hello/);
+      done();
+    });
+
+    stream.write(fakeFile);
+    stream.end();
+  });
+
+  it('appends new files to the destination', function(done) {
+    var stream = surgeon.slice(__dirname + '/fixtures/app.css');
+    var fakeFile = new File({
+      cwd: __dirname,
+      base: __dirname + '/test',
+      path: __dirname + '/test/file2.css',
+      contents: new Buffer('Goodbye')
+    });
+
+    stream.on('data', function(file) {
+      expect(file.path).to.be(__dirname + '/fixtures/app.css');
+      expect(file.contents.toString()).to.match(/Goodbye/);
+      expect(file.contents.toString()).to.match(/Hello/);
+      done();
+    });
+
+    stream.write(fakeFile);
+    stream.end();
+  });
 });
