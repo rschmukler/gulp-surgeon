@@ -101,7 +101,11 @@ exports.slice = function(filePath, opts) {
       }
     }
     if(!found) {
-      destFile.contents = new Buffer(destFile.contents.toString() + newLine + file.contents.toString());
+      if(opts.prepend) {
+        destFile.contents = new Buffer(file.contents.toString() + newLine + destFile.contents.toString());
+      } else {
+        destFile.contents = new Buffer(destFile.contents.toString() + newLine + file.contents.toString());
+      }
     }
     this.emit('data', destFile);
   }
