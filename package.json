@@ -13,8 +13,10 @@
     "type": "git",
     "url": "git://github.com/rschmukler/gulp-surgeon"
   },
+  "homepage": "https://github.com/rschmukler/gulp-surgeon",
   "keywords": [
     "gulp",
+    "gulpplugin",
     "surgeon",
     "induvidual",
     "files"
