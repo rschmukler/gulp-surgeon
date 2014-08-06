@@ -11,6 +11,8 @@ var COMMENT_MAP = {
   js:  { start: '/*', end: '*/' }
 };
 
+var stitchReread = false;
+
 exports.stitch = function(fileName, opts) {
   opts = opts || {};
   if (!fileName) throw new PluginError('gulp-surgeon', 'Missing fileName for destination');
@@ -48,6 +50,7 @@ exports.stitch = function(fileName, opts) {
       path: joinedPath,
       contents: new Buffer(joinedContents)
     });
+    stitchReread = true;
     this.emit('data', joinedFile);
     this.emit('end');
   }
@@ -81,6 +84,11 @@ exports.slice = function(filePath, opts) {
   });
 
   function write(file) {
+    if(stitchReread) {
+      destFile.contents = readFileSync(filePath);
+      stitchReread = false;
+    }
+
     var regex = new RegExp('surgeon-file: ' + file.path);
 
     var buffer = destFile.contents.toString().split(newLine),
