@@ -18,7 +18,7 @@ gulp.task('styles', function() {
     .pipe(gulp.dest('public/'));
 }
 
-gulp.watch(stylPaths), function(event) {
+gulp.watch(stylPaths, function(event) {
   gulp.src(event.path)
     .pipe(stylus)
     .pipe(surgeon.slice('public/app.css'))
